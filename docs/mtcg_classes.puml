@@ -1,0 +1,65 @@
+@startuml
+
+class User {
+    - String username
+    - String password
+    - int coins = 20
+    - Stack stack
+    - Deck deck
+    + register()
+    + login()
+    + acquirePackage() : -5 coins
+    + defineDeck() : selects 4 best cards
+    + tradeCard()
+    + battle(User opponent)
+}
+
+class Card {
+    - String name
+    - final int damage
+    + getDamage()
+    + getName()
+}
+
+class MonsterCard extends Card {
+    - String element
+}
+
+class SpellCard extends Card {
+    - String element
+}
+
+class Stack {
+    - List<Card> cards
+    + addCard(Card card)
+    + removeCard(Card card)
+    + getCards()
+}
+
+class Deck {
+    - List<Card> cards
+    + addCard(Card card)
+    + removeCard(Card card)
+    + getCards()
+}
+
+class Package {
+    - List<Card> cards
+    + getCards()
+}
+
+class Battle {
+    - User player1
+    - User player2
+    + startBattle()
+}
+
+User -- Stack : "owns 1"
+User -- Deck : "has 1"
+User -- Package : "can acquire 4"
+Stack -- Card : "contains"
+Deck -- Card : "contains 4"
+Package -- Card : "includes 5"
+Battle -- User : "involves 2"
+
+@enduml
