@@ -1,7 +1,6 @@
 package at.technikum.mtcg;
 
-import at.technikum.mtcg.handlers.SessionHandler;
-import at.technikum.mtcg.handlers.UserHandler;
+import at.technikum.mtcg.handlers.*;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -12,6 +11,13 @@ public class RestServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(10001), 0);
         server.createContext("/users", new UserHandler());
         server.createContext("/sessions", new SessionHandler());
+        server.createContext("/packages", new PackageHandler());
+        server.createContext("/deck", new DeckHandler());
+        server.createContext("/battle", new BattleHandler());
+        server.createContext("/scoreboard", new ScoreboardHandler());
+        server.createContext("/trades", new TradeHandler());
+        server.createContext("/stack", new StackHandler());
+        server.createContext("/profile", new ProfileHandler());
         server.setExecutor(null); // creates a default executor
 
 
