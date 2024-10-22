@@ -13,7 +13,10 @@ public class RestServer {
         server.createContext("/users", new UserHandler());
         server.createContext("/sessions", new SessionHandler());
         server.setExecutor(null); // creates a default executor
+
+
         server.start();
         System.out.println("Server running on port 10001...");
     }
 }
+

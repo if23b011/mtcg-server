@@ -20,13 +20,17 @@ public class SessionHandler implements HttpHandler {
             User user = parseUserFromJson(requestBody);
 
             if (user != null && user.login()) {
-                String response = "User logged in successfully.";
+                // Token generieren
+                String token = user.generateToken();
+
+                // Antwort vorbereiten
+                String response = "User logged in successfully. Token: " + token + "\n";
                 exchange.sendResponseHeaders(200, response.getBytes().length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(response.getBytes());
                 }
             } else {
-                String response = "Login failed: Invalid username or password.";
+                String response = "HTTP/1.1 401 Unauthorized: Invalid credentials.\n";
                 exchange.sendResponseHeaders(401, response.getBytes().length);
                 try (OutputStream os = exchange.getResponseBody()) {
                     os.write(response.getBytes());
@@ -42,7 +46,7 @@ public class SessionHandler implements HttpHandler {
             Gson gson = new Gson();
             return gson.fromJson(json, User.class);
         } catch (JsonSyntaxException e) {
-            System.out.println("Fehler beim Parsen der JSON-Anfrage: " + e.getMessage());
+            System.out.println("Fehler beim Parsen der JSON-Anfrage: " + e.getMessage() + "\n");
             return null;
         }
     }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class User {
     private final String Username;
@@ -22,17 +23,18 @@ public class User {
         return this.Password;
     }
 
+    public String generateToken() {
+        return Username + "-mtcgToken-" + UUID.randomUUID();
+    }
+
     public boolean register() {
     String checkUserSQL = "SELECT * FROM users WHERE username = ?";
     String insertUserSQL = "INSERT INTO users (username, password, coins) VALUES (?, ?, 20)";
 
     try (Connection conn = DatabaseConnector.connect()) {
-        System.out.println("Datenbankverbindung hergestellt.");
-
         try (PreparedStatement checkStmt = conn.prepareStatement(checkUserSQL)) {
             checkStmt.setString(1, this.Username);
             ResultSet rs = checkStmt.executeQuery();
-            System.out.println("Überprüfe, ob der Benutzername bereits vergeben ist.");
 
             if (rs.next()) {
                 System.out.println("Benutzername bereits vergeben: " + this.Username);
@@ -43,7 +45,6 @@ public class User {
         try (PreparedStatement insertStmt = conn.prepareStatement(insertUserSQL)) {
             insertStmt.setString(1, this.Username);
             insertStmt.setString(2, this.Password); // TODO: Passwort verschlüsseln!
-            System.out.println("Füge neuen Benutzer in die Datenbank ein.");
             insertStmt.executeUpdate();
         }
 
@@ -51,8 +52,7 @@ public class User {
         return true;
 
     } catch (SQLException e) {
-        e.printStackTrace();
-        System.out.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
+        System.err.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
         return false;
     }
 }
@@ -68,8 +68,8 @@ public class User {
             stmt.setString(2, this.Password); // Passwort verschlüsseln!
 
             ResultSet resultSet = stmt.executeQuery();
+            System.out.println("Login erfolgreich");
             return resultSet.next();
-
         } catch (SQLException e) {
             return false;
         }

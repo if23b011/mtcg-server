@@ -22,34 +22,32 @@ public class UserHandler implements HttpHandler {
             if (user != null && user.getUsername() != null && user.getPassword() != null) {
                 try {
                     if (user.register()) {
-                        String response = "User registered successfully.";
+                        String response = "HTTP/1.1 201 Created: User registered successfully.\n";
                         exchange.sendResponseHeaders(201, response.getBytes().length);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes());
-                        }
+                        writeResponse(exchange, response);
                     } else {
-                        String response = "User registration failed: Username already exists.";
+                        String response = "HTTP/1.1 409 Conflict: User already exists.\n";
                         exchange.sendResponseHeaders(409, response.getBytes().length);
-                        try (OutputStream os = exchange.getResponseBody()) {
-                            os.write(response.getBytes());
-                        }
+                        writeResponse(exchange, response);
                     }
                 } catch (Exception e) {
-                    String response = "User registration failed due to an internal error: " + e.getMessage();
+                    String response = "HTTP/1.1 500 Internal Server Error: " + e.getMessage() + "\n";
                     exchange.sendResponseHeaders(500, response.getBytes().length);
-                    try (OutputStream os = exchange.getResponseBody()) {
-                        os.write(response.getBytes());
-                    }
+                    writeResponse(exchange, response);
                 }
             } else {
-                String response = "Invalid request body.";
+                String response = "HTTP/1.1 400 Bad Request: Invalid JSON format.\n";
                 exchange.sendResponseHeaders(400, response.getBytes().length);
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(response.getBytes());
-                }
+                writeResponse(exchange, response);
             }
         } else {
             exchange.sendResponseHeaders(405, -1); // Method Not Allowed
+        }
+    }
+
+    private static void writeResponse(HttpExchange exchange, String response) throws IOException {
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
         }
     }
 
@@ -58,7 +56,7 @@ public class UserHandler implements HttpHandler {
             Gson gson = new Gson();
             return gson.fromJson(json, User.class);
         } catch (JsonSyntaxException e) {
-            System.out.println("Fehler beim Parsen der JSON-Anfrage: " + e.getMessage());
+            System.out.println("Fehler beim Parsen der JSON-Anfrage: " + e.getMessage() + "\n");
             return null;
         }
     }
