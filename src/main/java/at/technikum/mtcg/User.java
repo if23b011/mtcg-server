@@ -6,6 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
+
 public class User {
     private final String Username;
     private final String Password;
@@ -42,11 +47,16 @@ public class User {
             }
         }
 
+        // Salt generieren und Passwort hashen
+        String salt = generateSalt();
+        String hashedPassword = hashPassword(this.Password, salt);
+
         try (PreparedStatement insertStmt = conn.prepareStatement(insertUserSQL)) {
             insertStmt.setString(1, this.Username);
-            insertStmt.setString(2, this.Password); // TODO: Passwort verschlüsseln!
+            insertStmt.setString(2, hashedPassword);
             insertStmt.executeUpdate();
         }
+
 
         System.out.println("Benutzer erfolgreich registriert.");
         return true;
@@ -55,23 +65,66 @@ public class User {
         System.err.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
         return false;
     }
-}
+    }
 
 
     public boolean login() {
-        String selectUserSQL = "SELECT * FROM users WHERE username = ? AND password = ?";
+        String selectUserSQL = "SELECT * FROM users WHERE username = ?";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(selectUserSQL)) {
 
             stmt.setString(1, this.Username);
-            stmt.setString(2, this.Password); // Passwort verschlüsseln!
-
             ResultSet resultSet = stmt.executeQuery();
-            System.out.println("Login erfolgreich");
-            return resultSet.next();
-        } catch (SQLException e) {
+
+            if (resultSet.next()) {
+                String storedHash = resultSet.getString("password");
+
+                // Salt und Hash trennen
+                String[] parts = storedHash.split(":");
+                if (parts.length != 2) {
+                    throw new RuntimeException("Fehlerhaftes Passwortformat in der Datenbank");
+                }
+
+                String salt = parts[0];
+                String expectedHash = parts[1];
+
+                // Passwort mit dem extrahierten Salt erneut hashen
+                String hashedPassword = hashPassword(this.Password, salt).split(":")[1];
+
+                // Vergleich des gespeicherten Hashs mit dem neu generierten Hash
+                if (hashedPassword.equals(expectedHash)) {
+                    System.out.println("Login erfolgreich: " + this.Username);
+                    return true; // Login erfolgreich
+                }
+            }
+
             return false;
+
+        } catch (SQLException e) {
+            System.err.println("Exception: " + e.getMessage());
+            System.out.println("Fehler beim Login: " + e.getMessage());
+            return false;
+        }
+    }
+
+
+    public static String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
+    }
+
+    // Methode zum Hashen des Passworts
+    public static String hashPassword(String password, String salt) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt.getBytes());  // Salt zum Hashen hinzufügen
+            byte[] hashedPassword = md.digest(password.getBytes());
+            return salt + ":" + Base64.getEncoder().encodeToString(hashedPassword); // Salt und Hash speichern
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Hashing-Algorithmus nicht gefunden", e);
         }
     }
 
