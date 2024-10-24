@@ -16,9 +16,9 @@ public class RestServer {
         server.createContext("/battle", new BattleHandler());
         server.createContext("/scoreboard", new ScoreboardHandler());
         server.createContext("/trades", new TradeHandler());
-        server.createContext("/stack", new StackHandler());
+        server.createContext("/stack", new StatsHandler());
         server.createContext("/profile", new ProfileHandler());
-        server.setExecutor(null); // creates a default executor
+        server.setExecutor(null); // creates a default executorgi
 
 
         server.start();
