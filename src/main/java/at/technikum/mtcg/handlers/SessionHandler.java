@@ -1,15 +1,12 @@
 package at.technikum.mtcg.handlers;
 
 import at.technikum.mtcg.User;
-import at.technikum.mtcg.util.JsonUtil;
 import at.technikum.mtcg.util.ResponseUtil;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import at.technikum.mtcg.util.JsonUtil;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class SessionHandler implements HttpHandler {
     @Override
@@ -26,7 +23,7 @@ public class SessionHandler implements HttpHandler {
                 String token = user.generateAuthToken();
 
                 // Antwort vorbereiten
-                String response = "User logged in successfully. Token: " + token + "\n";
+                String response = "HTTP/1.1 200 OK: User logged in successfully. Token: " + token + "\n";
                 exchange.sendResponseHeaders(200, response.getBytes().length);
                 ResponseUtil.writeResponse(exchange, response);
             } else {
@@ -39,3 +36,4 @@ public class SessionHandler implements HttpHandler {
         }
     }
 }
+    

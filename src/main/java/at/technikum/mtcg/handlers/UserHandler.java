@@ -1,14 +1,12 @@
 package at.technikum.mtcg.handlers;
 
 import at.technikum.mtcg.User;
-import at.technikum.mtcg.util.JsonUtil;
 import at.technikum.mtcg.util.ResponseUtil;
-import com.google.gson.*;
+import at.technikum.mtcg.util.JsonUtil;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class UserHandler implements HttpHandler {
     @Override
