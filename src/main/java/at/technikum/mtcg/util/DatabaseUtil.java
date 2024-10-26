@@ -18,12 +18,12 @@ public class DatabaseUtil {
                 ResultSet rs = checkStmt.executeQuery();
 
                 if (rs.next()) {
-                    System.out.println("Benutzername bereits vergeben: " + user.getUsername());
+                    System.out.println("Username already taken: " + user.getUsername());
                     return false;
                 }
             }
 
-            // Salt generieren und Passwort hashen
+            // Generate salt and hash password
             String salt = PasswordUtil.generateSalt();
             String hashedPassword = PasswordUtil.hashPassword(user.getPassword(), salt);
 
@@ -33,11 +33,11 @@ public class DatabaseUtil {
                 insertStmt.executeUpdate();
             }
 
-            System.out.println("Benutzer erfolgreich registriert.");
+            System.out.println("User successfully registered");
             return true;
 
         } catch (SQLException e) {
-            System.err.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
+            System.err.println("Error during user registration: " + e.getMessage());
             return false;
         }
     }
@@ -54,22 +54,22 @@ public class DatabaseUtil {
             if (resultSet.next()) {
                 String storedHash = resultSet.getString("password");
 
-                // Salt und Hash trennen
+                // Separate salt and hash
                 String[] parts = storedHash.split(":");
                 if (parts.length != 2) {
-                    throw new RuntimeException("Fehlerhaftes Passwortformat in der Datenbank");
+                    throw new RuntimeException("Incorrect password format in the database");
                 }
 
                 String salt = parts[0];
                 String expectedHash = parts[1];
 
-                // Passwort mit dem extrahierten Salt erneut hashen
+                // Hash the password again with the extracted salt
                 String hashedPassword = PasswordUtil.hashPassword(user.getPassword(), salt).split(":")[1];
 
-                // Vergleich des gespeicherten Hashs mit dem neu generierten Hash
+                // Comparison of the stored hash with the newly generated hash
                 if (hashedPassword.equals(expectedHash)) {
-                    System.out.println("Login erfolgreich: " + user.getUsername());
-                    return true; // Login erfolgreich
+                    System.out.println("Login successful: " + user.getUsername());
+                    return true;
                 }
             }
 
@@ -77,7 +77,7 @@ public class DatabaseUtil {
 
         } catch (SQLException e) {
             System.err.println("Exception: " + e.getMessage());
-            System.out.println("Fehler beim Login: " + e.getMessage());
+            System.out.println("Error logging in: " + e.getMessage());
             return false;
         }
     }

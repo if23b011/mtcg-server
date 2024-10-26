@@ -13,11 +13,11 @@ public class DatabaseConnector {
 
         try (InputStream input = DatabaseConnector.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input == null) {
-                throw new RuntimeException("Konfigurationsdatei 'config.properties' wurde nicht gefunden");
+                throw new RuntimeException("Configuration file 'config.properties' was not found");
             }
             props.load(input);
         } catch (IOException e) {
-            throw new RuntimeException("Fehler beim Laden der Konfigurationsdatei", e);
+            throw new RuntimeException("Failed to load configuration file", e);
         }
 
         String url = props.getProperty("db.url");

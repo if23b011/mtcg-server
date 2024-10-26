@@ -17,11 +17,11 @@ public class PasswordUtil {
     public static String hashPassword(String password, String salt) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt.getBytes());  // Salt zum Hashen hinzufügen
+            md.update(salt.getBytes());  // Add salt for hashing
             byte[] hashedPassword = md.digest(password.getBytes());
-            return salt + ":" + Base64.getEncoder().encodeToString(hashedPassword); // Salt und Hash speichern
+            return salt + ":" + Base64.getEncoder().encodeToString(hashedPassword); // Store salt and hash
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Hashing-Algorithmus nicht gefunden", e);
+            throw new RuntimeException("Hashing algorithm not found", e);
         }
     }
 }

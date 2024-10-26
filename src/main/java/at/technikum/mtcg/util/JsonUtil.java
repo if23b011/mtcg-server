@@ -11,7 +11,7 @@ public class JsonUtil {
         try {
             return gson.fromJson(json, User.class);
         } catch (JsonSyntaxException e) {
-            System.out.println("Fehler beim Parsen der JSON-Anfrage: " + e.getMessage() + "\n");
+            System.out.println("Error parsing JSON request: " + e.getMessage() + "\n");
             return null;
         }
     }

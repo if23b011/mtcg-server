@@ -12,10 +12,10 @@ public class UserHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if ("POST".equals(exchange.getRequestMethod())) {
-            // JSON Request Body lesen
+            // Read JSON Request Body
             String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-            // JSON deserialisieren über die parseUserFromJson-Methode
+            // deserialize JSON
             User user = JsonUtil.parseUserFromJson(requestBody);
 
             if (user != null && user.getUsername() != null && user.getPassword() != null) {

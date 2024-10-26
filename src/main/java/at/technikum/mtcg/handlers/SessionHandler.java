@@ -12,17 +12,17 @@ public class SessionHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if ("POST".equals(exchange.getRequestMethod())) {
-            // JSON Request Body lesen
+            // Read JSON Request Body
             String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-            // JSON deserialisieren
+            // deserialize JSON
             User user = JsonUtil.parseUserFromJson(requestBody);
 
             if (user != null && user.login()) {
-                // Token generieren
+                // generate Token
                 String token = user.generateAuthToken();
 
-                // Antwort vorbereiten
+                // prepare an answer
                 String response = "HTTP/1.1 200 OK: User logged in successfully. Token: " + token + "\n";
                 exchange.sendResponseHeaders(200, response.getBytes().length);
                 ResponseUtil.writeResponse(exchange, response);
