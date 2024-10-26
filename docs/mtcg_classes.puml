@@ -1,0 +1,104 @@
+@startuml
+
+package models {
+    class User {
+        - String username
+        - String password
+        - int coins = 20
+        - Stack stack
+        - Deck deck
+        + boolean register()
+        + String login()
+        + String generateAuthToken()
+        + void acquirePackage()
+        + void defineDeck()
+        + void tradeCard(Card card)
+        + void battle(User opponent)
+    }
+
+    class Card {
+        - String id
+        - String name
+        - String type
+        - double damage
+        + String getId()
+        + String getName()
+        + String getType()
+        + double getDamage()
+    }
+
+    class MonsterCard extends Card {
+        - String element
+    }
+
+    class SpellCard extends Card {
+        - String element
+    }
+
+    class Stack {
+        - List<Card> cards
+        + void addCard(Card card)
+        + void removeCard(Card card)
+        + List<Card> getCards()
+    }
+
+    class Deck {
+        - List<Card> cards
+        + void addCard(Card card)
+        + void removeCard(Card card)
+        + List<Card> getCards()
+        + boolean isValid()
+    }
+
+    class Package {
+        - List<Card> cards
+        + void addCard(Card card)
+        + List<Card> getCards()
+    }
+}
+
+package handlers {
+    class UserHandler {
+        + void handle(HttpExchange exchange)
+    }
+
+    class SessionHandler {
+        + void handle(HttpExchange exchange)
+    }
+}
+
+package database {
+    class DatabaseConnector <<utility>> {
+        + static Connection connect()
+    }
+}
+
+package utils {
+    class DatabaseUtil <<utility>> {
+        + static boolean registerUser(User user)
+        + static String loginUser(User user)
+        + static boolean isValidToken(String token)
+    }
+}
+
+package server {
+    class RestServer {
+        + void main(String[] args)
+    }
+}
+
+User -- Stack : "owns 1"
+User -- Deck : "has 1"
+User -- Package : "can acquire 0..4"
+Stack -- Card : "contains 0..*"
+Deck -- Card : "contains 4"
+Package -- Card : "includes 5"
+UserHandler ..> User : "uses"
+SessionHandler ..> User : "uses"
+
+RestServer ..> UserHandler : "creates"
+RestServer ..> SessionHandler : "creates"
+DatabaseUtil ..> DatabaseConnector : "uses"
+DatabaseUtil <.. User : "uses"
+
+@enduml
