@@ -1,65 +1,103 @@
 @startuml
 
-class User {
-    - String username
-    - String password
-    - int coins = 20
-    - Stack stack
-    - Deck deck
-    + register()
-    + login()
-    + acquirePackage() : -5 coins
-    + defineDeck() : selects 4 best cards
-    + tradeCard()
-    + battle(User opponent)
+package mtcg.models {
+    class User {
+        - String username
+        - String password
+        - int coins = 20
+        - Stack stack
+        - Deck deck
+        + boolean register()
+        + String login()
+        + String generateAuthToken()
+        + void acquirePackage()
+        + void defineDeck()
+        + void tradeCard(Card card)
+        + void battle(User opponent)
+    }
+
+    class Card {
+        - String id
+        - String name
+        - String type
+        - double damage
+        + String getId()
+        + String getName()
+        + String getType()
+        + double getDamage()
+    }
+
+    class MonsterCard extends Card {
+        - String element
+    }
+
+    class SpellCard extends Card {
+        - String element
+    }
+
+    class Stack {
+        - List<Card> cards
+        + void addCard(Card card)
+        + void removeCard(Card card)
+        + List<Card> getCards()
+    }
+
+    class Deck {
+        - List<Card> cards
+        + void addCard(Card card)
+        + void removeCard(Card card)
+        + List<Card> getCards()
+        + boolean isValid()
+    }
+
+    class Package {
+        - List<Card> cards
+        + void addCard(Card card)
+        + List<Card> getCards()
+    }
 }
 
-class Card {
-    - String name
-    - final int damage
-    + getDamage()
-    + getName()
+
+package mtcg.handlers {
+    class UserHandler {
+        + void handle(HttpExchange exchange)
+    }
+
+    class SessionHandler {
+        + void handle(HttpExchange exchange)
+    }
 }
 
-class MonsterCard extends Card {
-    - String element
+package mtcg.database {
+    class DatabaseConnector <<utility>> {
+        + static Connection connect()
+    }
 }
 
-class SpellCard extends Card {
-    - String element
+package mtcg.util {
+    class DatabaseUtil <<utility>> {
+        + static boolean registerUser(User user)
+        + static String loginUser(User user)
+        + static boolean isValidToken(String token)
+    }
 }
 
-class Stack {
-    - List<Card> cards
-    + addCard(Card card)
-    + removeCard(Card card)
-    + getCards()
-}
-
-class Deck {
-    - List<Card> cards
-    + addCard(Card card)
-    + removeCard(Card card)
-    + getCards()
-}
-
-class Package {
-    - List<Card> cards
-    + getCards()
-}
-
-class Battle {
-    - User player1
-    - User player2
-    + startBattle()
+package mtcg.server {
+    class RestServer {
+        + void main(String[] args)
+    }
 }
 
 User -- Stack : "owns 1"
 User -- Deck : "has 1"
-User -- Package : "can acquire 4"
-Stack -- Card : "contains"
+User -- Package : "can acquire 0..*"
+Stack -- Card : "contains 0..*"
 Deck -- Card : "contains 4"
 Package -- Card : "includes 5"
-Battle -- User : "involves 2"
+UserHandler ..> User : "<<use>>"
+SessionHandler ..> User : "<<use>>"
+RestServer ..> DatabaseConnector : "<<use>>"
+DatabaseUtil ..> DatabaseConnector : "<<use>>"
+DatabaseUtil ..> User : "<<use>>"
 
 @enduml
