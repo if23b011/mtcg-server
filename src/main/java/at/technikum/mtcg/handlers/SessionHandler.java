@@ -18,22 +18,20 @@ public class SessionHandler implements HttpHandler {
             // deserialize JSON
             User user = JsonUtil.parseUserFromJson(requestBody);
 
-            if (user != null && user.login()) {
-                // generate Token
-                String token = user.generateAuthToken();
-
+            String token = user != null ? user.login() : null;
+            String response;
+            if (token != null) {
                 // prepare an answer
-                String response = "HTTP/1.1 200 OK: User logged in successfully. Token: " + token + "\n";
+                response = "HTTP/1.1 200 OK: User logged in successfully. Token: " + token + "\n";
                 exchange.sendResponseHeaders(200, response.getBytes().length);
-                ResponseUtil.writeResponse(exchange, response);
             } else {
-                String response = "HTTP/1.1 401 Unauthorized: Invalid credentials.\n";
+                response = "HTTP/1.1 401 Unauthorized: Invalid credentials.\n";
                 exchange.sendResponseHeaders(401, response.getBytes().length);
-                ResponseUtil.writeResponse(exchange, response);
             }
+            ResponseUtil.writeResponse(exchange, response);
+
         } else {
             exchange.sendResponseHeaders(405, -1); // Method Not Allowed
         }
     }
 }
-    
