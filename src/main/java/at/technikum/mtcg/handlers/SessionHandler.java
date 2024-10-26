@@ -1,6 +1,6 @@
 package at.technikum.mtcg.handlers;
 
-import at.technikum.mtcg.User;
+import at.technikum.mtcg.models.User;
 import at.technikum.mtcg.util.ResponseUtil;
 import at.technikum.mtcg.util.JsonUtil;
 import com.sun.net.httpserver.HttpExchange;

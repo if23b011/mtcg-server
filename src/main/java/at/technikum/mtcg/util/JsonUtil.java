@@ -1,6 +1,6 @@
 package at.technikum.mtcg.util;
 
-import at.technikum.mtcg.User;
+import at.technikum.mtcg.models.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
