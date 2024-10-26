@@ -1,5 +1,7 @@
 package at.technikum.mtcg;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +14,9 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class User {
+    @SerializedName("Username")
     private final String username;
+    @SerializedName("Password")
     private final String password;
 
     public User(String username, String password) {
@@ -28,7 +32,7 @@ public class User {
         return this.password;
     }
 
-    public String generateToken() {
+    public String generateAuthToken() {
 
         return username + "-mtcgToken-" + UUID.randomUUID();
     }
@@ -127,13 +131,5 @@ public class User {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Hashing-Algorithmus nicht gefunden", e);
         }
-    }
-
-    public static void main(String[] args) {
-        User newUser = new User("testuser", "testpassword");
-        System.out.println(newUser.register() ? "Registrierung erfolgreich!" : "Registrierung fehlgeschlagen!");
-
-        User loginUser = new User("testuser", "testpassword");
-        System.out.println(loginUser.login() ? "Login erfolgreich!" : "Login fehlgeschlagen!");
     }
 }
