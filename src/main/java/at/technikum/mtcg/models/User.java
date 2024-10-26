@@ -1,4 +1,4 @@
-package at.technikum.mtcg;
+package at.technikum.mtcg.models;
 
 import com.google.gson.annotations.SerializedName;
 import at.technikum.mtcg.util.DatabaseUtil;

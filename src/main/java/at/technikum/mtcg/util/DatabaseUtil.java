@@ -1,7 +1,7 @@
 package at.technikum.mtcg.util;
 
-import at.technikum.mtcg.DatabaseConnector;
-import at.technikum.mtcg.User;
+import at.technikum.mtcg.database.DatabaseConnector;
+import at.technikum.mtcg.models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
