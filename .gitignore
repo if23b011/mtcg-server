@@ -162,10 +162,11 @@ buildNumber.properties
 # Ignore config file with sensitive information
 src/main/resources/config.properties
 
-# Ignore pdf, xlsx and bat files
-*.pdf
+# Ignore docx, xlsx, bat files and the specification pdf
+*.docx
 *.xlsx
 *.bat
+*specification.pdf
 
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij,java,maven

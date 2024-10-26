@@ -1,7 +1,7 @@
 package at.technikum.mtcg.models;
 
 import com.google.gson.annotations.SerializedName;
-import at.technikum.mtcg.util.DatabaseUtil;
+import at.technikum.mtcg.utils.DatabaseUtil;
 import java.util.UUID;
 
 public class User {
