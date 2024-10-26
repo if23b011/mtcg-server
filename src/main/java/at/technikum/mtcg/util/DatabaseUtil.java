@@ -42,8 +42,9 @@ public class DatabaseUtil {
         }
     }
 
-    public static boolean loginUser(User user) {
+    public static String loginUser(User user) {
         String selectUserSQL = "SELECT * FROM users WHERE username = ?";
+        String updateTokenSQL = "UPDATE users SET token = ? WHERE username = ?";
 
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(selectUserSQL)) {
@@ -68,16 +69,40 @@ public class DatabaseUtil {
 
                 // Comparison of the stored hash with the newly generated hash
                 if (hashedPassword.equals(expectedHash)) {
+                    String token = user.generateAuthToken();
+                    try(PreparedStatement updateStmt = conn.prepareStatement(updateTokenSQL)) {
+                        updateStmt.setString(1, token);
+                        updateStmt.setString(2, user.getUsername());
+                        updateStmt.executeUpdate();
+                    }
                     System.out.println("Login successful: " + user.getUsername());
-                    return true;
+                    return token;
                 }
             }
 
-            return false;
+            return null;
 
         } catch (SQLException e) {
             System.err.println("Exception: " + e.getMessage());
             System.out.println("Error logging in: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static boolean isValidToken(String token) {
+        String selectTokenSQL = "SELECT * FROM users WHERE token = ?";
+
+        try (Connection conn = DatabaseConnector.connect();
+             PreparedStatement stmt = conn.prepareStatement(selectTokenSQL)) {
+
+            stmt.setString(1, token);
+            ResultSet resultSet = stmt.executeQuery();
+
+            return resultSet.next();
+
+        } catch (SQLException e) {
+            System.err.println("Exception: " + e.getMessage());
+            System.out.println("Error validating token: " + e.getMessage());
             return false;
         }
     }

@@ -31,7 +31,7 @@ public class User {
         return DatabaseUtil.registerUser(this);
     }
 
-    public boolean login() {
+    public String login() {
         return DatabaseUtil.loginUser(this);
     }
 }
