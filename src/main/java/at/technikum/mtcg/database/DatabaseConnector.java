@@ -1,4 +1,4 @@
-package at.technikum.mtcg;
+package at.technikum.mtcg.database;
 
 import java.io.IOException;
 import java.io.InputStream;

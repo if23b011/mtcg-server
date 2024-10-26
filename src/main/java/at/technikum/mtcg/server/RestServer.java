@@ -1,5 +1,6 @@
-package at.technikum.mtcg;
+package at.technikum.mtcg.server;
 
+import at.technikum.mtcg.database.DatabaseConnector;
 import at.technikum.mtcg.handlers.*;
 import com.sun.net.httpserver.HttpServer;
 
