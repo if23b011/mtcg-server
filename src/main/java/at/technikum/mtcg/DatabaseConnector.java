@@ -24,16 +24,7 @@ public class DatabaseConnector {
         String user = props.getProperty("db.user");
         String password = props.getProperty("db.password");
 
+        System.out.println("Connecting to database: " + url);
         return DriverManager.getConnection(url, user, password);
-    }
-
-    public static void main(String[] args) {
-        try (Connection connection = DatabaseConnector.connect()) {
-            if (connection != null) {
-                System.out.println("Verbindung zur Datenbank erfolgreich hergestellt!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Fehler bei der Verbindung zur Datenbank: " + e.getMessage());
-        }
     }
 }

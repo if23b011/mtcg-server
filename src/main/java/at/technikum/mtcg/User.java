@@ -12,59 +12,60 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class User {
-    private final String Username;
-    private final String Password;
+    private final String username;
+    private final String password;
 
     public User(String username, String password) {
-        this.Username = username;
-        this.Password = password;
+        this.username = username;
+        this.password = password;
     }
 
     public String getUsername() {
-        return this.Username;
+        return this.username;
     }
 
     public String getPassword() {
-        return this.Password;
+        return this.password;
     }
 
     public String generateToken() {
-        return Username + "-mtcgToken-" + UUID.randomUUID();
+
+        return username + "-mtcgToken-" + UUID.randomUUID();
     }
 
     public boolean register() {
-    String checkUserSQL = "SELECT * FROM users WHERE username = ?";
-    String insertUserSQL = "INSERT INTO users (username, password, coins) VALUES (?, ?, 20)";
+        String checkUserSQL = "SELECT * FROM users WHERE username = ?";
+        String insertUserSQL = "INSERT INTO users (username, password, coins) VALUES (?, ?, 20)";
 
-    try (Connection conn = DatabaseConnector.connect()) {
-        try (PreparedStatement checkStmt = conn.prepareStatement(checkUserSQL)) {
-            checkStmt.setString(1, this.Username);
-            ResultSet rs = checkStmt.executeQuery();
+        try (Connection conn = DatabaseConnector.connect()) {
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkUserSQL)) {
+                checkStmt.setString(1, this.username);
+                ResultSet rs = checkStmt.executeQuery();
 
-            if (rs.next()) {
-                System.out.println("Benutzername bereits vergeben: " + this.Username);
-                return false;
+                if (rs.next()) {
+                    System.out.println("Benutzername bereits vergeben: " + this.username);
+                    return false;
+                }
             }
+
+            // Salt generieren und Passwort hashen
+            String salt = generateSalt();
+            String hashedPassword = hashPassword(this.password, salt);
+
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertUserSQL)) {
+                insertStmt.setString(1, this.username);
+                insertStmt.setString(2, hashedPassword);
+                insertStmt.executeUpdate();
+            }
+
+
+            System.out.println("Benutzer erfolgreich registriert.");
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
+            return false;
         }
-
-        // Salt generieren und Passwort hashen
-        String salt = generateSalt();
-        String hashedPassword = hashPassword(this.Password, salt);
-
-        try (PreparedStatement insertStmt = conn.prepareStatement(insertUserSQL)) {
-            insertStmt.setString(1, this.Username);
-            insertStmt.setString(2, hashedPassword);
-            insertStmt.executeUpdate();
-        }
-
-
-        System.out.println("Benutzer erfolgreich registriert.");
-        return true;
-
-    } catch (SQLException e) {
-        System.err.println("Fehler bei der Benutzerregistrierung: " + e.getMessage());
-        return false;
-    }
     }
 
 
@@ -74,7 +75,7 @@ public class User {
         try (Connection conn = DatabaseConnector.connect();
              PreparedStatement stmt = conn.prepareStatement(selectUserSQL)) {
 
-            stmt.setString(1, this.Username);
+            stmt.setString(1, this.username);
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
@@ -90,11 +91,11 @@ public class User {
                 String expectedHash = parts[1];
 
                 // Passwort mit dem extrahierten Salt erneut hashen
-                String hashedPassword = hashPassword(this.Password, salt).split(":")[1];
+                String hashedPassword = hashPassword(this.password, salt).split(":")[1];
 
                 // Vergleich des gespeicherten Hashs mit dem neu generierten Hash
                 if (hashedPassword.equals(expectedHash)) {
-                    System.out.println("Login erfolgreich: " + this.Username);
+                    System.out.println("Login erfolgreich: " + this.username);
                     return true; // Login erfolgreich
                 }
             }

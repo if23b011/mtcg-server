@@ -18,11 +18,26 @@ public class RestServer {
         server.createContext("/trades", new TradeHandler());
         server.createContext("/stack", new StatsHandler());
         server.createContext("/profile", new ProfileHandler());
-        server.setExecutor(null); // creates a default executorgi
+        server.setExecutor(null); // creates a default executor
 
 
         server.start();
         System.out.println("Server running on port 10001...");
+        //try Database Connection every 5 seconds
+        while (true) {
+            try {
+                DatabaseConnector.connect();
+                break;
+            } catch (Exception e) {
+                System.out.println("Database not reachable, retrying in 5 seconds...");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        System.out.println("Database connected...");
     }
 }
 
