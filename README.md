@@ -1,1 +1,1 @@
-# mtcg-server
+https://github.com/if23b011/mtcg-server
